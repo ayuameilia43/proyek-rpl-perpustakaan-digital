@@ -12,7 +12,9 @@
     "db:migrate": "node prisma/migrate.js",
     "db:seed": "node prisma/seed.js",
     "db:reset": "node prisma/migrate.js && node prisma/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test --require ./test/setup.js \"test/**/*.test.js\"",
+    "test:watch": "node --test --watch --require ./test/setup.js \"test/**/*.test.js\"",
+    "test:coverage": "node --test --require ./test/setup.js --experimental-test-coverage --test-coverage-include=src/**/*.js --test-coverage-exclude=src/index.js --test-coverage-lines=70 --test-coverage-branches=60 --test-coverage-functions=70 \"test/**/*.test.js\""
   },
   "keywords": [],
   "author": "",

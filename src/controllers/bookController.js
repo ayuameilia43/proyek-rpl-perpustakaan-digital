@@ -48,7 +48,7 @@ async function index(req, res, next) {
 }
 
 function createForm(req, res, next) {
-  getCategories()
+  return getCategories()
     .then((categories) => {
       res.render("admin/books/form", {
         title: "Tambah Buku",

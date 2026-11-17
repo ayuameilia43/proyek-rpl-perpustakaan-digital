@@ -1,7 +1,9 @@
 # Perpustakaan Digital — SMA NEGERI 1 MAJALENGKA
-
-Aplikasi web Perpustakaan Digital untuk lingkungan sekolah (Siswa, Pustakawan, Administrator).
-Proyek ini merupakan tugas **Rekayasa Perangkat Lunak (RPL)** dengan pendekatan *Waterfall* (SDLC bertahap).
+Nama : Ayu Amelia Fahlevi
+NIM  : 41257094
+Tema Topik Kelompok : "AI-Based Digital Learning Resource Ecosystem"
+Aplikasi Perpustakaan Digital SMA Negeri 1 Majalengka merupakan sistem berbasis web yang dikembangkan untuk mempermudah pengelolaan perpustakaan sekolah secara digital. Aplikasi ini menyediakan fitur pengelolaan buku, katalog digital, pencarian buku, peminjaman, pengembalian, perhitungan denda, serta riwayat transaksi anggota. Selain itu, aplikasi dilengkapi integrasi Artificial Intelligence (AI) berupa AI Book Recommendation untuk memberikan rekomendasi buku dan AI Virtual Librarian sebagai chatbot yang membantu menjawab pertanyaan pengguna terkait layanan perpustakaan. Administrator juga dapat mengatur provider, model, dan API Key AI melalui halaman konfigurasi. Dengan fitur tersebut, pengelolaan perpustakaan menjadi lebih praktis, terstruktur, dan interaktif.
+**Link Video Progres 1, Progres 2, & Video Final Demo :** [Tonton Video Demo di Youtube] (https://youtu.be/EKynZxXYs64)
 
 > **Tagline:** Katalog, peminjaman, denda otomatis, laporan sirkulasi, notifikasi WhatsApp, dan asisten AI dalam satu aplikasi.
 
@@ -15,7 +17,7 @@ Proyek ini merupakan tugas **Rekayasa Perangkat Lunak (RPL)** dengan pendekatan 
 | Role-Based Access Control | Menu berbeda untuk Siswa, Pustakawan, dan Administrator |
 | Katalog Buku | Pencarian (judul/ISBN/pengarang), filter kategori & format, kartu buku |
 | E-Book Reader | Daftar e-book & pembaca PDF bawaan browser (iframe) |
-| Peminjaman | Ajukan pinjam → persetujuan admin → stok & jatuh tempo otomatis |
+| Peminjaman | Ajukan pinjam → persetujuan admin → stok & jatuh tempo otomatis |ss
 | Denda Otomatis | Deteksi keterlambatan, hitung denda = hari terlambat × nominal/hari, verifikasi pelunasan |
 | Riwayat Peminjaman | Riwayat lengkap siswa per transaksi |
 | Laporan Sirkulasi | Filter rentang tanggal, export CSV, tampilan siap cetak PDF |
@@ -128,6 +130,9 @@ Buka browser: **http://localhost:3000**
 | `npm run db:migrate` | Buat database + tabel dari file migration SQL |
 | `npm run db:seed` | Isi/reset data demo (truncate lalu insert) |
 | `npm run db:reset` | Migration + seed berurutan (untuk mulai dari nol) |
+| `npm test` | Menjalankan seluruh unit & integration test |
+| `npm run test:watch` | Menjalankan test dalam mode watch |
+| `npm run test:coverage` | Menjalankan test + laporan coverage + threshold |
 
 ---
 
@@ -193,7 +198,18 @@ Authorization: {whatsapp_api_token}    # token mentah (tanpa "Bearer")
 
 ## 9. Pengujian
 
-Dokumen skenario pengujian black-box (UAT) tersedia di
+Pengujian otomatis memakai Node.js built-in test runner (tanpa framework tambahan):
+
+```bash
+npm test
+npm run test:coverage
+```
+
+Pipeline CI tersedia di `.github/workflows/ci.yml` dan berjalan pada setiap push/PR.
+Laporan lengkap strategi, hasil, coverage, dan batasan pengujian tersedia di
+[`docs/TESTING.md`](docs/TESTING.md).
+
+Dokumen skenario pengujian black-box (UAT) manual tetap tersedia di
 [`docs/RPL-DOKUMENTASI.md`](docs/RPL-DOKUMENTASI.md) bagian **Skenario Pengujian Black-Box (UAT)**.
 
 ---
@@ -202,6 +218,8 @@ Dokumen skenario pengujian black-box (UAT) tersedia di
 
 - [`docs/RPL-DOKUMENTASI.md`](docs/RPL-DOKUMENTASI.md) — PRD, User Flow, Use Case, ERD, panduan instalasi, tabel UAT.
 - `prisma/migrations/2026111500000_init_mysql.sql` — definisi tabel MySQL.
+
+
 
 ---
 

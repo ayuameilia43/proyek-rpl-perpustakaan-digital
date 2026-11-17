@@ -20,7 +20,7 @@ function guestOnly(req, res, next) {
 }
 
 function isStaff(user) {
-  return user && (user.role === "admin" || user.role === "pustakawan");
+  return Boolean(user && (user.role === "admin" || user.role === "pustakawan"));
 }
 
 function requireStaff(req, res, next) {

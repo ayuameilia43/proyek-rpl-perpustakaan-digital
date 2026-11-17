@@ -23,7 +23,7 @@ function extractApiError(input) {
     return data.message || data.detail || data.reason;
   }
 
-  if (typeof input === "string" && input.trim()) return input.slice(0, 300);
+  if (typeof input === "string" && input.trim()) return input.trim().slice(0, 300);
   return "Kesalahan tidak diketahui.";
 }
 

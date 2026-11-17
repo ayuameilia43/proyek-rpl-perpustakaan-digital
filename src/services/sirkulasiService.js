@@ -19,7 +19,8 @@ function calculateFine(dueDate, returnDate, finePerDay) {
   r.setHours(0, 0, 0, 0);
   const days = Math.floor((r - d) / (1000 * 60 * 60 * 24));
   if (days <= 0) return 0;
-  const perDay = Number(finePerDay || 0);
+  const parsed = Number(finePerDay);
+  const perDay = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   return Math.round(days * perDay * 100) / 100;
 }
 
