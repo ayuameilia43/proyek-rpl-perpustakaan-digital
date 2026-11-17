@@ -1,0 +1,20 @@
+<%
+  // Partial cover buku: menampilkan cover jika ada, jika tidak/tidak valid tampil placeholder ikon buku.
+  var _cover = (typeof book !== 'undefined' && book && book.cover_image_url) ? book.cover_image_url : null;
+  var _title = (typeof book !== 'undefined' && book && book.title) ? book.title : 'Buku';
+  var _wrap = (typeof wrapClass !== 'undefined') ? wrapClass : 'h-full w-full';
+%>
+<div class="relative overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900 <%= _wrap %>">
+  <!-- Placeholder (selalu ada di belakang; muncul bila cover kosong/gagal dimuat) -->
+  <div class="flex h-full w-full flex-col items-center justify-center gap-1 p-3 text-center">
+    <svg class="h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a4.5 4.5 0 00-4.5-4.5H3.75v15h4.5a3.75 3.75 0 013.75 3.75m0-14.25a4.5 4.5 0 014.5-4.5h3.75v15h-4.5a3.75 3.75 0 00-3.75 3.75m0-14.25v14.25"/>
+    </svg>
+    <span class="line-clamp-2 text-xs font-semibold leading-snug text-slate-200"><%= _title %></span>
+  </div>
+  <% if (_cover) { %>
+    <img src="<%= _cover %>" alt="Cover <%= _title %>" loading="lazy"
+      class="absolute inset-0 h-full w-full object-cover"
+      onerror="this.onerror=null;this.remove();" />
+  <% } %>
+</div>

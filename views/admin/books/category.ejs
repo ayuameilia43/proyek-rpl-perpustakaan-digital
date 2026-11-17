@@ -1,0 +1,72 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-5 flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800">Kelola Kategori</h2>
+      <p class="text-sm text-slate-500">Tambah, ubah, atau hapus kategori buku.</p>
+    </div>
+    <a href="/admin/koleksi" class="text-sm font-medium text-brand hover:text-brand-dark">← Kembali ke Koleksi</a>
+  </div>
+
+  <% if (errors && errors.length) { %>
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <ul class="list-inside list-disc space-y-0.5"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+    </div>
+  <% } %>
+
+  <!-- Form tambah -->
+  <div class="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h3 class="mb-3 text-sm font-semibold text-slate-700">Tambah Kategori Baru</h3>
+    <form method="POST" action="/admin/kategori" class="grid gap-3 sm:grid-cols-[1fr_2fr_auto_auto] sm:items-end">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <div>
+        <label class="mb-1 block text-xs font-medium text-slate-600">Nama</label>
+        <input name="name" type="text" required maxlength="50" placeholder="Contoh: Biologi"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-medium text-slate-600">Deskripsi</label>
+        <input name="description" type="text" placeholder="Deskripsi singkat"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <label class="flex items-center gap-2 pb-2 text-sm text-slate-600">
+        <input type="checkbox" name="is_active" value="1" checked class="h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand" /> Aktif
+      </label>
+      <button type="submit" class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">Tambah</button>
+    </form>
+  </div>
+
+  <!-- Daftar kategori -->
+  <div class="space-y-3">
+    <% if (!categories.length) { %>
+      <p class="rounded-xl border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-500">Belum ada kategori.</p>
+    <% } %>
+    <% categories.forEach(function (c) { %>
+      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <form method="POST" action="/admin/kategori/<%= c.id %>" class="grid flex-1 gap-3 sm:grid-cols-[1fr_2fr_auto_auto] sm:items-end">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <div>
+              <label class="mb-1 block text-xs font-medium text-slate-600">Nama</label>
+              <input name="name" type="text" required maxlength="50" value="<%= c.name %>"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-medium text-slate-600">Deskripsi</label>
+              <input name="description" type="text" value="<%= c.description || '' %>"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+            </div>
+            <label class="flex items-center gap-2 pb-2 text-sm text-slate-600">
+              <input type="checkbox" name="is_active" value="1" <%= c.is_active ? 'checked' : '' %> class="h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand" /> Aktif
+            </label>
+            <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Simpan</button>
+          </form>
+          <form method="POST" action="/admin/kategori/<%= c.id %>/delete" onsubmit="return confirm('Hapus kategori ini?')">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <button type="submit" class="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Hapus</button>
+          </form>
+        </div>
+        <p class="mt-2 text-xs text-slate-400">Dipakai <%= c.book_count %> buku</p>
+      </div>
+    <% }); %>
+  </div>
+</div>

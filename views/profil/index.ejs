@@ -1,0 +1,136 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-5">
+    <h2 class="text-xl font-bold text-slate-800">Pengaturan Akun</h2>
+    <p class="text-sm text-slate-500">Kelola data profil dan password akun Anda di <%= schoolName %>.</p>
+  </div>
+
+  <% if (errors && errors.length) { %>
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <ul class="list-inside list-disc space-y-0.5"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+    </div>
+  <% } %>
+
+  <!-- Tab navigasi -->
+  <div class="mb-5 flex gap-2 border-b border-slate-200">
+    <a href="/profil?tab=profil"
+      class="rounded-t-lg border-b-2 px-4 py-2.5 text-sm font-semibold transition <%= tab === 'profil' ? 'border-brand text-brand' : 'border-transparent text-slate-500 hover:text-slate-700' %>">
+      Edit Profil
+    </a>
+    <a href="/profil?tab=password"
+      class="rounded-t-lg border-b-2 px-4 py-2.5 text-sm font-semibold transition <%= tab === 'password' ? 'border-brand text-brand' : 'border-transparent text-slate-500 hover:text-slate-700' %>">
+      Ubah Password
+    </a>
+  </div>
+
+  <% if (tab === 'profil') { %>
+    <!-- ============ TAB 1: EDIT PROFIL ============ -->
+    <form method="POST" action="/profil" class="space-y-5">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="mb-4 text-base font-semibold text-slate-800">Data Akun</h3>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">NISN</label>
+            <input type="text" value="<%= profile.nisn %>" disabled
+              class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-500" />
+            <p class="mt-1 text-xs text-slate-400">NISN tidak dapat diubah sendiri. Hubungi pustakawan bila perlu perubahan.</p>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Role</label>
+            <input type="text" value="<%= roleLabel %>" disabled
+              class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-500" />
+            <p class="mt-1 text-xs text-slate-400">Role ditetapkan oleh Administrator.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="mb-4 text-base font-semibold text-slate-800">Informasi Personal</h3>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-700">Nama Lengkap</label>
+            <input name="full_name" type="text" required minlength="3" value="<%= form.full_name || '' %>"
+              placeholder="Nama lengkap"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          </div>
+          <% if (profile.role === 'siswa') { %>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700">Kelas</label>
+              <input name="class" type="text" required value="<%= form.class || '' %>"
+                placeholder="Contoh: X RPL / XI AKL"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+            </div>
+          <% } else { %>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700">Kelas</label>
+              <input type="text" value="<%= profile.role === 'siswa' ? (form.class || '-') : '-' %>" disabled
+                class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-500" />
+            </div>
+          <% } %>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+            <input name="email" type="email" required value="<%= form.email || '' %>"
+              placeholder="nama@email.com"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+            <p class="mt-1 text-xs text-slate-400">Email dipakai untuk login dan tidak boleh sama dengan akun lain.</p>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-700">Nomor WhatsApp</label>
+            <input name="whatsapp_number" type="text" required value="<%= form.whatsapp_number || '' %>"
+              placeholder="Contoh: 081234567890"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+            <p class="mt-1 text-xs text-slate-400">
+              Gunakan format aktif <span class="font-semibold text-slate-600">0812xxx</span> (nomor yang terhubung ke WhatsApp).
+              Nomor ini dipakai untuk menerima notifikasi peminjaman, pengembalian, dan pengingat keterlambatan.
+              Format 62xxx / +62xxx otomatis diubah menjadi 08xxx.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <button type="submit" class="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
+            Simpan Perubahan
+          </button>
+        </div>
+      </section>
+    </form>
+
+  <% } else { %>
+    <!-- ============ TAB 2: UBAH PASSWORD ============ -->
+    <form method="POST" action="/profil/password" class="space-y-5">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="mb-1 text-base font-semibold text-slate-800">Ubah Password</h3>
+        <p class="mb-4 text-xs text-slate-500">Masukkan password lama untuk memastikan pemilik akun yang sedang mengubah password.</p>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-700">Password Lama</label>
+            <input name="old_password" type="password" required autocomplete="current-password"
+              placeholder="Password saat ini"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Password Baru</label>
+            <input name="new_password" type="password" required minlength="6" autocomplete="new-password"
+              placeholder="Minimal 6 karakter"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Konfirmasi Password Baru</label>
+            <input name="confirm_password" type="password" required minlength="6" autocomplete="new-password"
+              placeholder="Ulangi password baru"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <button type="submit" class="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
+            Ubah Password
+          </button>
+        </div>
+      </section>
+    </form>
+  <% } %>
+</div>

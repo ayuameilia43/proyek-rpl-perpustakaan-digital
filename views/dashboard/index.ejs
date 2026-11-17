@@ -1,0 +1,144 @@
+<% if (role === 'siswa') { %>
+  <!-- ============ DASHBOARD SISWA ============ -->
+  <div class="mb-6 rounded-2xl bg-gradient-to-r from-brand to-emerald-700 p-6 text-white shadow-sm">
+    <h2 class="text-xl font-bold sm:text-2xl">Halo, <%= user.full_name %>!</h2>
+    <p class="mt-1 text-sm text-emerald-50">Selamat datang di Perpustakaan Digital <%= schoolName %>. Yuk, temukan buku favoritmu hari ini.</p>
+  </div>
+
+  <div class="mb-6 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Buku Sedang Dipinjam</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800"><%= activeLoans.length %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Menunggu Persetujuan</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800"><%= pendingCount %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Denda Belum Lunas</p>
+      <p class="mt-1 text-3xl font-bold <%= unpaidFine > 0 ? 'text-red-600' : 'text-slate-800' %>">Rp <%= Number(unpaidFine).toLocaleString('id-ID') %></p>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <!-- Peminjaman aktif -->
+    <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">Peminjaman Aktif</h3>
+      <% if (!activeLoans.length) { %>
+        <p class="rounded-lg bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">Belum ada buku yang sedang dipinjam.</p>
+      <% } else { %>
+        <ul class="space-y-3">
+          <% activeLoans.forEach(function (loan) { %>
+            <li class="flex items-start justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50/60 p-3">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-slate-800"><%= loan.title %></p>
+                <p class="text-xs text-slate-500"><%= loan.author %></p>
+                <p class="mt-1 text-xs text-slate-400">Jatuh tempo: <%= loan.due_date %></p>
+              </div>
+              <div class="shrink-0 text-right">
+                <% if (loan.days_left < 0) { %>
+                  <span class="inline-block rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">Terlambat <%= Math.abs(loan.days_left) %> hari</span>
+                <% } else if (loan.days_left === 0) { %>
+                  <span class="inline-block rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Jatuh tempo hari ini</span>
+                <% } else { %>
+                  <span class="inline-block rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700"><%= loan.days_left %> hari lagi</span>
+                <% } %>
+                <% if (Number(loan.fine_amount) > 0) { %>
+                  <p class="mt-1 text-xs font-medium text-red-600">Denda: Rp <%= Number(loan.fine_amount).toLocaleString('id-ID') %></p>
+                <% } %>
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </section>
+
+    <!-- Buku terbaru -->
+    <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">Buku Terbaru</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <% latestBooks.forEach(function (b) { %>
+          <a href="/katalog" class="group overflow-hidden rounded-xl bg-card p-4 text-white transition hover:ring-2 hover:ring-brand">
+            <span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold <%= b.format === 'e-book' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/10 text-slate-200' %>">
+              <%= b.format === 'e-book' ? 'E-Book' : (b.format === 'keduanya' ? 'Fisik & E-Book' : 'Fisik') %>
+            </span>
+            <p class="mt-2 line-clamp-2 text-sm font-semibold leading-snug"><%= b.title %></p>
+            <p class="mt-1 text-xs text-slate-400"><%= b.author %></p>
+          </a>
+        <% }); %>
+      </div>
+    </section>
+  </div>
+
+<% } else { %>
+  <!-- ============ DASHBOARD ADMINISTRATOR ============ -->
+  <div class="mb-6 rounded-2xl bg-slate-900 p-6 text-white shadow-sm">
+    <h2 class="text-xl font-bold sm:text-2xl">Ringkasan Perpustakaan</h2>
+    <p class="mt-1 text-sm text-slate-300">Statistik koleksi dan sirkulasi <%= schoolName %>.</p>
+  </div>
+
+  <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Total Judul Buku</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800"><%= stats.total_titles %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Total Eksemplar Fisik</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800"><%= stats.total_physical %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Jumlah E-Book</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800"><%= stats.total_ebooks %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Total Siswa</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800"><%= stats.total_students %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Peminjaman Aktif</p>
+      <p class="mt-1 text-3xl font-bold text-emerald-600"><%= stats.active_loans %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Menunggu Persetujuan</p>
+      <p class="mt-1 text-3xl font-bold text-amber-600"><%= stats.pending %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Peminjaman Terlambat</p>
+      <p class="mt-1 text-3xl font-bold text-red-600"><%= stats.overdue %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm text-slate-500">Denda Terkumpul</p>
+      <p class="mt-1 text-3xl font-bold text-slate-800">Rp <%= Number(stats.fines_collected).toLocaleString('id-ID') %></p>
+    </div>
+  </div>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h3 class="mb-4 text-base font-semibold text-slate-800">Permintaan Menunggu Persetujuan</h3>
+    <% if (!pendingList.length) { %>
+      <p class="rounded-lg bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">Tidak ada permintaan yang menunggu.</p>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="text-xs uppercase text-slate-400">
+            <tr>
+              <th class="px-3 py-2">Siswa</th>
+              <th class="px-3 py-2">Kelas</th>
+              <th class="px-3 py-2">Buku</th>
+              <th class="px-3 py-2">Tanggal Ajuan</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% pendingList.forEach(function (p) { %>
+              <tr>
+                <td class="px-3 py-2 font-medium text-slate-700"><%= p.full_name %></td>
+                <td class="px-3 py-2 text-slate-500"><%= p.class || '-' %></td>
+                <td class="px-3 py-2 text-slate-600"><%= p.title %></td>
+                <td class="px-3 py-2 text-slate-500"><%= p.borrow_date %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+<% } %>

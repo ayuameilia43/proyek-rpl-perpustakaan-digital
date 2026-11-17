@@ -1,0 +1,101 @@
+<%
+  // Kumpulan ikon (inline SVG) agar sidebar ringan tanpa library eksternal
+  const icons = {
+    home: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.125 1.125 0 011.59 0L21.75 12M4.5 9.75v10.125A1.125 1.125 0 005.625 21h3.75v-5.625h4.5V21h3.75a1.125 1.125 0 001.125-1.125V9.75"/>',
+    book: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a4.5 4.5 0 00-4.5-4.5H3.75v15h4.5a3.75 3.75 0 013.75 3.75m0-14.25a4.5 4.5 0 014.5-4.5h3.75v15h-4.5a3.75 3.75 0 00-3.75 3.75m0-14.25v14.25"/>',
+    ebook: '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3.75h10.5a1.5 1.5 0 011.5 1.5v13.5a1.5 1.5 0 01-1.5 1.5H6.75a1.5 1.5 0 01-1.5-1.5V5.25a1.5 1.5 0 011.5-1.5zM9 7.5h6M9 11.25h6M9 15h3"/>',
+    clock: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/>',
+    sparkles: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zM18 15l.75 2.25L21 18l-2.25.75L18 21l-.75-2.25L15 18l2.25-.75L18 15z"/>',
+    swap: '<path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75L3.75 7.5 7.5 11.25M3.75 7.5h13.5M16.5 20.25l3.75-3.75-3.75-3.75M20.25 16.5H6.75"/>',
+    library: '<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 4.5h4.5v15H4.5zM10.5 4.5h4.5v15h-4.5zM16.5 4.5h3l1.5 15h-4.5z"/>',
+    chart: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 20.25h16.5M7.5 16.5V9m4.5 7.5V4.5m4.5 12V12"/>',
+    users: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.5a3.75 3.75 0 00-7.5 0M12 11.25a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5zM19.5 19.5a3 3 0 00-3-3M16.5 7.5a3 3 0 11-1.5 5.6"/>',
+    cog: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>',
+    cpu: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3.75v2.25m6-2.25v2.25M9 18v2.25M15 18v2.25M3.75 9H6m-2.25 6H6m12-6h2.25M18 15h2.25M6.75 6.75h10.5v10.5H6.75z"/>'
+  };
+
+  const groups = [
+    { title: 'Utama', items: [
+      { href: '/dashboard', label: 'Dashboard', icon: 'home' },
+      { href: '/katalog', label: 'Katalog Buku', icon: 'book' },
+      { href: '/ebook', label: 'E-Book Reader', icon: 'ebook' },
+      { href: '/riwayat', label: 'Riwayat Peminjaman', icon: 'clock' }
+    ]},
+    { title: 'Fitur AI', items: [
+      { href: '/rekomendasi', label: 'Rekomendasi AI', icon: 'sparkles' }
+    ]}
+  ];
+
+  if (isStaff) {
+    groups.push({ title: 'Operasional Pustakawan', items: [
+      { href: '/admin/peminjaman', label: 'Proses Peminjaman', icon: 'swap' },
+      { href: '/admin/koleksi', label: 'Kelola Koleksi Buku', icon: 'library' },
+      { href: '/admin/laporan', label: 'Laporan Sirkulasi', icon: 'chart' }
+    ]});
+  }
+  if (isAdmin) {
+    groups.push({ title: 'Administrasi Sistem', items: [
+      { href: '/admin/users', label: 'User Management', icon: 'users' },
+      { href: '/admin/settings', label: 'System Settings', icon: 'cog' },
+      { href: '/admin/ai', label: 'Konfigurasi AI', icon: 'cpu' }
+    ]});
+  }
+%>
+
+<!-- Overlay mobile -->
+<div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-black/40 lg:hidden"></div>
+
+<aside id="sidebar"
+  class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full transform overflow-y-auto bg-slate-900 text-slate-300 transition-transform duration-200 ease-in-out lg:translate-x-0">
+  <!-- Brand -->
+  <div class="flex items-center gap-3 border-b border-white/10 px-5 py-5">
+    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">P</div>
+    <div class="min-w-0">
+      <p class="truncate text-sm font-semibold text-white"><%= schoolName %></p>
+      <p class="text-xs text-slate-400">Perpustakaan Digital</p>
+    </div>
+    <button id="sidebar-close" class="ml-auto rounded-md p-1 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden" aria-label="Tutup menu">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Navigasi -->
+  <nav class="px-3 py-4">
+    <% groups.forEach(function (group) { %>
+      <p class="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500"><%= group.title %></p>
+      <ul class="space-y-1">
+        <% group.items.forEach(function (item) {
+             const active = currentPath === item.href;
+        %>
+          <li>
+            <a href="<%= item.href %>"
+               class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition
+               <%= active ? 'bg-brand text-white shadow-sm' : 'text-slate-300 hover:bg-white/10 hover:text-white' %>">
+              <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><%- icons[item.icon] %></svg>
+              <span class="truncate"><%= item.label %></span>
+            </a>
+          </li>
+    <% }); %>
+    </ul>
+    <% }); %>
+
+    <!-- Menu akun (semua role) -->
+    <div class="mt-2 border-t border-white/10 pt-3">
+      <ul class="space-y-1">
+        <li>
+          <a href="/profil"
+             class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition
+             <%= currentPath === '/profil' ? 'bg-brand text-white shadow-sm' : 'text-slate-300 hover:bg-white/10 hover:text-white' %>">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+            <span class="truncate">Pengaturan Akun</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="mt-4 border-t border-white/10 px-5 py-4 text-xs text-slate-500">
+    <p>© 2026 Perpustakaan Digital</p>
+    <p class="mt-0.5"><%= schoolName %></p>
+  </div>
+</aside>

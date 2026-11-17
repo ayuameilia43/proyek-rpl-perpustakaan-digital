@@ -1,0 +1,117 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-5 flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800"><%= isEdit ? 'Edit Buku' : 'Tambah Buku' %></h2>
+      <p class="text-sm text-slate-500"><%= isEdit ? 'Perbarui data buku dan/atau file.' : 'Lengkapi data buku beserta cover dan file e-book (bila ada).' %></p>
+    </div>
+    <a href="/admin/koleksi" class="text-sm font-medium text-brand hover:text-brand-dark">← Kembali</a>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <% if (errors && errors.length) { %>
+      <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <ul class="list-inside list-disc space-y-0.5"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="<%= isEdit ? '/admin/koleksi/' + form.id : '/admin/koleksi' %>"
+      enctype="multipart/form-data" class="grid gap-4 sm:grid-cols-2">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <div class="sm:col-span-2">
+        <label class="mb-1 block text-sm font-medium text-slate-700">Judul Buku</label>
+        <input name="title" type="text" required value="<%= form.title || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Pengarang</label>
+        <input name="author" type="text" required value="<%= form.author || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Penerbit</label>
+        <input name="publisher" type="text" value="<%= form.publisher || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Tahun Terbit</label>
+        <input name="year" type="number" min="1900" max="2100" value="<%= form.year || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">ISBN</label>
+        <input name="ISBN" type="text" required value="<%= form.ISBN || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Kategori</label>
+        <select name="category_id" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+          <option value="">-- Pilih Kategori --</option>
+          <% categories.forEach(function (c) { %>
+            <option value="<%= c.id %>" <%= form.category_id === c.id ? 'selected' : '' %>><%= c.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Format</label>
+        <select name="format" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+          <% formats.forEach(function (f) { %>
+            <option value="<%= f %>" <%= form.format === f ? 'selected' : '' %>><%= f === 'e-book' ? 'E-Book' : (f === 'keduanya' ? 'Fisik & E-Book' : 'Fisik') %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Total Stok Fisik</label>
+        <input name="total_stock_fisic" type="number" min="0" value="<%= form.total_stock_fisic != null ? form.total_stock_fisic : 0 %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Stok Fisik Tersedia</label>
+        <input name="stock_fisic" type="number" min="0" value="<%= form.stock_fisic != null ? form.stock_fisic : 0 %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Kuota E-Book</label>
+        <input name="stock_ebook" type="number" min="0" value="<%= form.stock_ebook != null ? form.stock_ebook : 0 %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="mb-1 block text-sm font-medium text-slate-700">Sinopsis</label>
+        <textarea name="synopsis" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"><%= form.synopsis || '' %></textarea>
+      </div>
+
+      <!-- Cover -->
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Cover Buku</label>
+        <div class="mb-2 h-32 w-24 overflow-hidden rounded-lg border border-slate-200">
+          <%- include('../../partials/book-cover', { book: form, wrapClass: 'h-32 w-24' }) %>
+        </div>
+        <input name="cover_image" type="file" accept="image/jpeg,image/png,image/webp"
+          class="w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-brand/10 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-brand hover:file:bg-brand/20" />
+        <p class="mt-1 text-xs text-slate-400">JPG / PNG / WebP, maks 2 MB.</p>
+      </div>
+
+      <!-- PDF -->
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">File PDF E-Book</label>
+        <div class="mb-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs">
+          <% if (form.pdf_e_book_url) { %>
+            <p class="text-slate-600">File saat ini: <a href="<%= form.pdf_e_book_url %>" target="_blank" class="font-medium text-brand hover:underline"><%= form.pdf_e_book_url.split('/').pop() %></a></p>
+          <% } else { %>
+            <p class="text-slate-400">Belum ada file PDF.</p>
+          <% } %>
+        </div>
+        <input name="ebook_file" type="file" accept="application/pdf"
+          class="w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-brand/10 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-brand hover:file:bg-brand/20" />
+        <p class="mt-1 text-xs text-slate-400">PDF, maks 10 MB. Kosongkan jika tidak mengganti.</p>
+      </div>
+
+      <div class="sm:col-span-2">
+        <button type="submit" class="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
+          <%= isEdit ? 'Simpan Perubahan' : 'Tambah Buku' %>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

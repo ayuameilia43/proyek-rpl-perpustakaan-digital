@@ -1,0 +1,40 @@
+<div class="mb-6">
+  <h2 class="text-xl font-bold text-slate-800">E-Book Reader</h2>
+  <p class="text-sm text-slate-500">Daftar buku digital (PDF) yang bisa dibaca langsung di browser tanpa dipinjam secara fisik.</p>
+</div>
+
+<% if (!books.length) { %>
+  <div class="rounded-xl border border-slate-200 bg-white px-4 py-12 text-center text-sm text-slate-500">
+    Belum ada e-book yang tersedia. Admin dapat mengunggah file PDF melalui menu Kelola Koleksi Buku.
+  </div>
+<% } %>
+
+<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <% books.forEach(function (b) { %>
+    <div class="flex flex-col overflow-hidden rounded-2xl bg-card text-white shadow-lg">
+      <div class="relative h-44">
+        <%- include('../partials/book-cover', { book: b, wrapClass: 'h-44' }) %>
+        <span class="absolute left-2 top-2 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-bold text-white">
+          E-Book
+        </span>
+      </div>
+      <div class="flex flex-1 flex-col p-4">
+        <p class="line-clamp-2 text-sm font-bold leading-snug"><%= b.title %></p>
+        <p class="mt-1 text-xs text-slate-400"><%= b.author %> · <%= b.category_name || 'Umum' %></p>
+        <% if (b.synopsis) { %>
+          <p class="mt-2 line-clamp-3 text-xs text-slate-500"><%= b.synopsis %></p>
+        <% } %>
+        <div class="mt-4 flex items-center gap-2 pt-2">
+          <a href="/ebook/<%= b.id %>"
+            class="flex-1 rounded-lg bg-emerald-600 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-emerald-500">
+            Baca Sekarang
+          </a>
+          <a href="/katalog/<%= b.id %>"
+            class="flex-1 rounded-lg border border-white/15 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-white/10">
+            Detail
+          </a>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>

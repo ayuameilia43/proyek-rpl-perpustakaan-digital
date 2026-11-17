@@ -1,0 +1,144 @@
+<div class="mx-auto max-w-4xl">
+  <div class="mb-5">
+    <h2 class="text-xl font-bold text-slate-800">System Settings</h2>
+    <p class="text-sm text-slate-500">Aturan bisnis & integrasi WhatsApp Gateway tersimpan dinamis di database (bukan hardcode).</p>
+  </div>
+
+  <% if (errors && errors.length) { %>
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <ul class="list-inside list-disc space-y-0.5"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+    </div>
+  <% } %>
+
+  <form method="POST" action="/admin/settings" class="space-y-5">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+    <!-- Identitas Sekolah -->
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">Identitas Sekolah</h3>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Nama Sekolah</label>
+          <input name="school_name" type="text" required value="<%= form.school_name || '' %>"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Alamat</label>
+          <input name="school_address" type="text" value="<%= form.school_address || '' %>"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Aturan Bisnis -->
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">Aturan Bisnis Perpustakaan</h3>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Denda per Hari (Rp)</label>
+          <input name="fine_per_day" type="number" min="0" step="500" required value="<%= form.fine_per_day %>"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Durasi Maksimal Pinjam (hari)</label>
+          <input name="max_borrow_duration" type="number" min="1" required value="<%= form.max_borrow_duration %>"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Kuota Buku per Siswa</label>
+          <input name="max_books_per_student" type="number" min="1" required value="<%= form.max_books_per_student %>"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Jam Buka</label>
+            <input name="operating_hours_start" type="time" required value="<%= form.operating_hours_start || '07:00' %>"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Jam Tutup</label>
+            <input name="operating_hours_end" type="time" required value="<%= form.operating_hours_end || '21:00' %>"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WhatsApp Gateway -->
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">WhatsApp Gateway</h3>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">API Endpoint</label>
+          <input name="whatsapp_api_endpoint" type="url" value="<%= form.whatsapp_api_endpoint || '' %>"
+            placeholder="https://api.fonnte.com/send"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">API Token</label>
+          <input type="text" disabled value="<%= maskedToken || '(belum diisi)' %>"
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-400" />
+          <input name="whatsapp_api_token" type="text" placeholder="Isi untuk mengganti token lama"
+            class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+      </div>
+
+      <div class="mt-4 space-y-3">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Template Pesan Peminjaman Disetujui</label>
+          <textarea name="whatsapp_template_pinjam" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"><%= form.whatsapp_template_pinjam || '' %></textarea>
+          <p class="mt-1 text-xs text-slate-400">Variabel: {nama}, {judul}, {batas_tanggal}, {nisn}, {kelas}</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Template Pesan Pengembalian</label>
+          <textarea name="whatsapp_template_kembali" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"><%= form.whatsapp_template_kembali || '' %></textarea>
+          <p class="mt-1 text-xs text-slate-400">Variabel: {nama}, {judul}, {tanggal_kembali}</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Template Pengingat Keterlambatan</label>
+          <textarea name="whatsapp_template_terlambat" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"><%= form.whatsapp_template_terlambat || '' %></textarea>
+          <p class="mt-1 text-xs text-slate-400">Variabel: {nama}, {judul}, {hari_terlambat}, {denda}</p>
+        </div>
+      </div>
+    </section>
+
+    <div>
+      <button type="submit" class="w-full rounded-lg bg-brand px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-dark sm:w-auto sm:px-8">
+        Simpan Pengaturan
+      </button>
+    </div>
+  </form>
+
+  <!-- Uji Coba Kirim WhatsApp -->
+  <section class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <h3 class="mb-1 text-base font-semibold text-slate-800">Uji Coba Kirim WhatsApp</h3>
+    <p class="mb-4 text-xs text-slate-500">
+      Format payload: <code class="rounded bg-slate-100 px-1 py-0.5">Authorization: &lt;token&gt;</code> +
+      <code class="rounded bg-slate-100 px-1 py-0.5">{ target, message, countryCode: "62" }</code> (standar Fonnte).
+      Nomor otomatis diubah ke format 62xxx (contoh 0811... menjadi 62811...).
+    </p>
+    <form method="POST" action="/admin/settings/test-wa" class="space-y-3">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <div class="grid gap-3 sm:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Nomor WhatsApp Tujuan</label>
+          <input name="test_number" type="text" placeholder="081234567890" required
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Token (opsional)</label>
+          <input name="test_token" type="text" placeholder="Kosongkan untuk memakai token tersimpan"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Pesan (opsional)</label>
+          <input name="test_message" type="text" placeholder="Kosongkan untuk memakai template peminjaman"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        </div>
+      </div>
+      <button type="submit" class="rounded-lg bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700">
+        Kirim Tes WA
+      </button>
+    </form>
+  </section>
+</div>

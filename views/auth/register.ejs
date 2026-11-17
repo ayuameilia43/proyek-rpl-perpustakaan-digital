@@ -1,0 +1,72 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <div class="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl sm:p-10">
+    <div class="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-800">Daftar Akun Siswa</h2>
+        <p class="mt-1 text-sm text-slate-500"><%= typeof schoolName !== 'undefined' ? schoolName : 'SMA NEGERI 1 MAJALENGKA' %></p>
+      </div>
+      <a href="/login" class="text-sm font-medium text-brand hover:text-brand-dark">← Kembali</a>
+    </div>
+
+    <% if (errors && errors.length) { %>
+      <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <ul class="list-inside list-disc space-y-0.5">
+          <% errors.forEach(function (e) { %><li><%= e %></li><% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/register" class="grid gap-4 sm:grid-cols-2">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">NISN</label>
+        <input name="nisn" type="text" inputmode="numeric" required value="<%= form.nisn || '' %>"
+          placeholder="Contoh: 11111111"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Nama Lengkap</label>
+        <input name="full_name" type="text" required value="<%= form.full_name || '' %>"
+          placeholder="Nama lengkap siswa"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Kelas</label>
+        <input name="class" type="text" required value="<%= form.class || '' %>"
+          placeholder="Contoh: X RPL / XI AKL"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Nomor WhatsApp</label>
+        <input name="whatsapp_number" type="text" required inputmode="tel" value="<%= form.whatsapp_number || '' %>"
+          placeholder="Contoh: 081234567890"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        <p class="mt-1 text-xs text-slate-400">Wajib diisi. Gunakan format aktif <span class="font-semibold text-slate-600">0812xxx</span> untuk menerima notifikasi peminjaman & pengingat keterlambatan.</p>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+        <input name="email" type="email" required value="<%= form.email || '' %>"
+          placeholder="nama@email.com"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+        <input name="password" type="password" required minlength="6" placeholder="Minimal 6 karakter"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Konfirmasi Password</label>
+        <input name="confirm_password" type="password" required minlength="6" placeholder="Ulangi password"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+
+      <div class="sm:col-span-2">
+        <button type="submit"
+          class="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand/40">
+          Daftar Sekarang
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-5 flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800"><%= isEdit ? 'Edit Pengguna' : 'Tambah Pengguna' %></h2>
+      <p class="text-sm text-slate-500"><%= isEdit ? 'Perbarui data akun pengguna.' : 'Buat akun baru untuk Siswa / Pustakawan / Administrator.' %></p>
+    </div>
+    <a href="/admin/users" class="text-sm font-medium text-brand hover:text-brand-dark">← Kembali</a>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <% if (errors && errors.length) { %>
+      <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <ul class="list-inside list-disc space-y-0.5">
+          <% errors.forEach(function (e) { %><li><%= e %></li><% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="<%= isEdit ? '/admin/users/' + form.id : '/admin/users' %>" class="grid gap-4 sm:grid-cols-2">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">NISN</label>
+        <input name="nisn" type="text" inputmode="numeric" required value="<%= form.nisn || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Nama Lengkap</label>
+        <input name="full_name" type="text" required value="<%= form.full_name || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Kelas</label>
+        <input name="class" type="text" required value="<%= form.class || '' %>"
+          placeholder="Contoh: X RPL / XI AKL"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Nomor WhatsApp</label>
+        <input name="whatsapp_number" type="text" required value="<%= form.whatsapp_number || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div class="sm:col-span-2">
+        <label class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+        <input name="email" type="email" required value="<%= form.email || '' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Role</label>
+        <select name="role" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+          <% roles.forEach(function (r) { %>
+            <option value="<%= r %>" <%= form.role === r ? 'selected' : '' %>><%= r === 'admin' ? 'Administrator' : (r === 'pustakawan' ? 'Pustakawan' : 'Siswa') %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">
+          <%= isEdit ? 'Password Baru (opsional)' : 'Password' %>
+        </label>
+        <input name="password" type="password" <%= isEdit ? '' : 'required' %> minlength="6"
+          placeholder="<%= isEdit ? 'Kosongkan jika tidak diubah' : 'Minimal 6 karakter' %>"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+        <% if (isEdit) { %><p class="mt-1 text-xs text-slate-400">Isi untuk mereset password pengguna ini.</p><% } %>
+      </div>
+
+      <label class="flex items-center gap-2 sm:col-span-2">
+        <input type="checkbox" name="is_active" value="1" <%= form.is_active ? 'checked' : '' %>
+          class="h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand" />
+        <span class="text-sm font-medium text-slate-700">Akun Aktif</span>
+      </label>
+
+      <div class="sm:col-span-2">
+        <button type="submit" class="w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
+          <%= isEdit ? 'Simpan Perubahan' : 'Tambah Pengguna' %>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

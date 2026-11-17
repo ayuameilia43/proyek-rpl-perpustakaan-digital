@@ -1,0 +1,87 @@
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-xl font-bold text-slate-800">Koleksi Buku</h2>
+    <p class="text-sm text-slate-500">Kelola data buku fisik & e-book, cover, dan file PDF.</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="/admin/kategori" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Kelola Kategori</a>
+    <a href="/admin/koleksi/create" class="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark">+ Tambah Buku</a>
+  </div>
+</div>
+
+<!-- Pencarian & filter -->
+<form method="GET" action="/admin/koleksi" class="mb-5 flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:flex-row">
+  <input name="q" value="<%= query.q || '' %>" placeholder="Cari judul / pengarang / ISBN"
+    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 lg:max-w-xs" />
+  <select name="category" class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand lg:w-44">
+    <option value="">Semua Kategori</option>
+    <% categories.forEach(function (c) { %>
+      <option value="<%= c.id %>" <%= query.category === c.id ? 'selected' : '' %>><%= c.name %></option>
+    <% }); %>
+  </select>
+  <select name="format" class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand lg:w-40">
+    <option value="">Semua Format</option>
+    <% formats.forEach(function (f) { %>
+      <option value="<%= f %>" <%= query.format === f ? 'selected' : '' %>><%= f === 'e-book' ? 'E-Book' : (f === 'keduanya' ? 'Fisik & E-Book' : 'Fisik') %></option>
+    <% }); %>
+  </select>
+  <div class="flex gap-2">
+    <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Cari</button>
+    <a href="/admin/koleksi" class="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Reset</a>
+  </div>
+</form>
+
+<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+  <table class="w-full text-left text-sm">
+    <thead class="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+      <tr>
+        <th class="px-4 py-3">Buku</th>
+        <th class="px-4 py-3">Kategori</th>
+        <th class="px-4 py-3">Format</th>
+        <th class="px-4 py-3">Stok Fisik</th>
+        <th class="px-4 py-3">ISBN</th>
+        <th class="px-4 py-3 text-right">Aksi</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% if (!books.length) { %>
+        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Tidak ada buku ditemukan.</td></tr>
+      <% } %>
+      <% books.forEach(function (b) { %>
+        <tr class="hover:bg-slate-50/60">
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              <div class="h-16 w-12 shrink-0 overflow-hidden rounded-lg">
+                <%- include('../../partials/book-cover', { book: b, wrapClass: 'h-16 w-12' }) %>
+              </div>
+              <div class="min-w-0">
+                <p class="truncate font-semibold text-slate-800"><%= b.title %></p>
+                <p class="truncate text-xs text-slate-500"><%= b.author %></p>
+                <% if (b.pdf_e_book_url) { %><p class="text-xs text-emerald-600">PDF tersedia</p><% } %>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-slate-500"><%= b.category_name || '-' %></td>
+          <td class="px-4 py-3">
+            <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= b.format === 'e-book' ? 'bg-emerald-100 text-emerald-700' : (b.format === 'keduanya' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600') %>">
+              <%= b.format === 'e-book' ? 'E-Book' : (b.format === 'keduanya' ? 'Fisik & E-Book' : 'Fisik') %>
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="font-mono text-xs"><%= b.stock_fisic %>/<%= b.total_stock_fisic %></span>
+          </td>
+          <td class="px-4 py-3 font-mono text-xs text-slate-500"><%= b.ISBN %></td>
+          <td class="px-4 py-3">
+            <div class="flex items-center justify-end gap-2">
+              <a href="/admin/koleksi/<%= b.id %>/edit" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50">Edit</a>
+              <form method="POST" action="/admin/koleksi/<%= b.id %>/delete" onsubmit="return confirm('Hapus buku ini beserta file cover/PDF-nya?')">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button type="submit" class="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Hapus</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>

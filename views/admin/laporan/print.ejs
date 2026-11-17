@@ -1,0 +1,43 @@
+<div class="mx-auto max-w-5xl">
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="text-xl font-bold text-slate-800">Laporan Sirkulasi</h2>
+    <button onclick="window.print()" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cetak</button>
+  </div>
+  <p class="mb-4 text-sm text-slate-500">Rentang: <%= from || 'Semua' %> s.d. <%= to || 'Sekarang' %> · Total transaksi: <%= rows.length %></p>
+
+  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm print:shadow-none">
+    <table class="w-full text-left text-sm">
+      <thead class="text-xs uppercase text-slate-400">
+        <tr>
+          <th class="px-3 py-2">Tanggal</th>
+          <th class="px-3 py-2">NISN</th>
+          <th class="px-3 py-2">Siswa</th>
+          <th class="px-3 py-2">Buku</th>
+          <th class="px-3 py-2">Status</th>
+          <th class="px-3 py-2">Jatuh Tempo</th>
+          <th class="px-3 py-2">Kembali</th>
+          <th class="px-3 py-2">Denda</th>
+          <th class="px-3 py-2">Status Bayar</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <% if (!rows.length) { %>
+          <tr><td colspan="9" class="px-3 py-8 text-center text-sm text-slate-500">Tidak ada data.</td></tr>
+        <% } %>
+        <% rows.forEach(function (r) { %>
+          <tr>
+            <td class="px-3 py-2 text-slate-500"><%= r.borrow_date || '-' %></td>
+            <td class="px-3 py-2 font-mono text-xs"><%= r.nisn %></td>
+            <td class="px-3 py-2 font-medium text-slate-700"><%= r.full_name %></td>
+            <td class="px-3 py-2 text-slate-600"><%= r.title %></td>
+            <td class="px-3 py-2"><%= r.status %></td>
+            <td class="px-3 py-2 text-slate-500"><%= r.due_date %></td>
+            <td class="px-3 py-2 text-slate-500"><%= r.return_date || '-' %></td>
+            <td class="px-3 py-2 text-slate-600">Rp <%= Number(r.fine_amount || 0).toLocaleString('id-ID') %></td>
+            <td class="px-3 py-2"><%= r.fine_paid_status %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

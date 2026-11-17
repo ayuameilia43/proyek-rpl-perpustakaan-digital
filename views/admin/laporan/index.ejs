@@ -1,0 +1,82 @@
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-xl font-bold text-slate-800">Laporan Sirkulasi</h2>
+    <p class="text-sm text-slate-500">Rekap transaksi peminjaman, pengembalian, keterlambatan, dan denda.</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="/admin/laporan/export/csv?from=<%= from %>&to=<%= to %>"
+      class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Export CSV</a>
+    <a href="/admin/laporan/print?from=<%= from %>&to=<%= to %>"
+      class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cetak PDF</a>
+  </div>
+</div>
+
+<!-- Filter rentang -->
+<form method="GET" action="/admin/laporan" class="mb-5 flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+  <input type="date" name="from" value="<%= from %>"
+    class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand" />
+  <span class="text-sm text-slate-500">s.d.</span>
+  <input type="date" name="to" value="<%= to %>"
+    class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand" />
+  <div class="flex gap-2">
+    <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Terapkan</button>
+    <a href="/admin/laporan" class="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Reset</a>
+  </div>
+</form>
+
+<div class="grid gap-4 sm:grid-cols-3">
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Jumlah Transaksi</p>
+    <p class="mt-1 text-3xl font-bold text-slate-800"><%= total %></p>
+  </div>
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Total Denda</p>
+    <p class="mt-1 text-3xl font-bold text-slate-800">Rp <%= Number(fines).toLocaleString('id-ID') %></p>
+  </div>
+</div>
+
+<div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+  <table class="w-full text-left text-sm">
+    <thead class="text-xs uppercase text-slate-400">
+      <tr>
+        <th class="px-3 py-2">Tanggal</th>
+        <th class="px-3 py-2">NISN</th>
+        <th class="px-3 py-2">Siswa</th>
+        <th class="px-3 py-2">Buku</th>
+        <th class="px-3 py-2">Status</th>
+        <th class="px-3 py-2">Jatuh Tempo</th>
+        <th class="px-3 py-2">Kembali</th>
+        <th class="px-3 py-2">Denda</th>
+        <th class="px-3 py-2">Status Bayar</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% if (!rows.length) { %>
+        <tr><td colspan="9" class="px-3 py-8 text-center text-sm text-slate-500">Tidak ada data pada rentang dipilih.</td></tr>
+      <% } %>
+      <% rows.forEach(function (r) { %>
+        <tr>
+          <td class="px-3 py-2 text-slate-500"><%= r.borrow_date || '-' %></td>
+          <td class="px-3 py-2 font-mono text-xs"><%= r.nisn %></td>
+          <td class="px-3 py-2 font-medium text-slate-700"><%= r.full_name %></td>
+          <td class="px-3 py-2 text-slate-600"><%= r.title %></td>
+          <td class="px-3 py-2">
+            <%
+              let statusClass = 'bg-amber-100 text-amber-700';
+              if (r.status === 'terlambat') { statusClass = 'bg-red-100 text-red-700'; }
+              else if (r.status === 'dipinjam') { statusClass = 'bg-blue-100 text-blue-700'; }
+              else if (r.status === 'dikembalikan') { statusClass = 'bg-emerald-100 text-emerald-700'; }
+            %>
+            <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold <%= statusClass %>"><%= r.status %></span>
+          </td>
+          <td class="px-3 py-2 text-slate-500"><%= r.due_date %></td>
+          <td class="px-3 py-2 text-slate-500"><%= r.return_date || '-' %></td>
+          <td class="px-3 py-2 text-slate-600">Rp <%= Number(r.fine_amount || 0).toLocaleString('id-ID') %></td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold <%= r.fine_paid_status === 'lunas' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>"><%= r.fine_paid_status === 'lunas' ? 'Lunas' : 'Belum Lunas' %></span>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>

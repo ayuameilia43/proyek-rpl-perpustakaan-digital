@@ -1,0 +1,35 @@
+<div class="mb-6">
+  <h2 class="text-xl font-bold text-slate-800">Rekomendasi AI</h2>
+  <p class="text-sm text-slate-500">Rekomendasi buku dari asisten AI berdasarkan katalog Perpustakaan Digital SMA NEGERI 1 MAJALENGKA.</p>
+</div>
+
+<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h3 class="mb-2 text-base font-semibold text-slate-800">Rekomendasi</h3>
+  <% if (ok && reply) { %>
+    <div class="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+      <p class="whitespace-pre-line"><%= reply %></p>
+    </div>
+  <% } else { %>
+    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+      <p class="whitespace-pre-line"><%= fallback || 'Rekomendasi AI belum tersedia saat ini.' %></p>
+    </div>
+  <% } %>
+  <% if (error) { %>
+    <p class="mt-2 text-xs text-slate-400">Detail: <%= error %></p>
+  <% } %>
+</div>
+
+<div class="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h3 class="mb-4 text-base font-semibold text-slate-800">Koleksi Tersedia untuk Rekomendasi</h3>
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <% books.forEach(function (b) { %>
+      <div class="rounded-lg border border-slate-200 p-3">
+        <p class="text-sm font-semibold text-slate-800"><%= b.title %></p>
+        <p class="text-xs text-slate-500"><%= b.author %> · <%= b.format === 'e-book' ? 'E-Book' : 'Fisik' %></p>
+        <% if (b.synopsis) { %>
+          <p class="mt-1 text-xs text-slate-500"><%= b.synopsis %></p>
+        <% } %>
+      </div>
+    <% }); %>
+  </div>
+</div>

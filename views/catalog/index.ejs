@@ -1,0 +1,112 @@
+<%
+  function formatLabel(f) {
+    if (f === 'e-book') return 'E-Book';
+    if (f === 'keduanya') return 'Fisik & E-Book';
+    return 'Fisik';
+  }
+  function stockBadge(b) {
+    if (b.format === 'e-book') return 'E-Book';
+    return b.stock_fisic + '/' + b.total_stock_fisic;
+  }
+%>
+
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-xl font-bold text-slate-800">Katalog Buku</h2>
+    <p class="text-sm text-slate-500">Cari & pilih buku untuk dibaca atau dipinjam.</p>
+  </div>
+  <form method="GET" action="/katalog" class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
+    <input name="q" value="<%= query.q || '' %>" placeholder="Judul, ISBN, atau pengarang"
+      class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 sm:max-w-xs" />
+    <select name="category" class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand sm:w-44">
+      <option value="">Semua Kategori</option>
+      <% categories.forEach(function (c) { %>
+        <option value="<%= c.id %>" <%= query.category === c.id ? 'selected' : '' %>><%= c.name %></option>
+      <% }); %>
+    </select>
+    <select name="format" class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand sm:w-40">
+      <option value="">Semua Format</option>
+      <% formats.forEach(function (f) { %>
+        <option value="<%= f %>" <%= query.format === f ? 'selected' : '' %>><%= formatLabel(f) %></option>
+      <% }); %>
+    </select>
+    <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Cari</button>
+    <a href="/katalog" class="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Reset</a>
+  </form>
+</div>
+
+<!-- Quick-filter pills -->
+<div class="mb-6 flex flex-wrap gap-2">
+  <a href="/katalog"
+     class="rounded-full px-3 py-1.5 text-xs font-semibold <%= !query.category ? 'bg-slate-800 text-white' : 'border border-slate-300 text-slate-600 hover:bg-slate-50' %>">
+    Semua
+  </a>
+  <% categories.forEach(function (c) { %>
+    <a href="/katalog?category=<%= c.id %>"
+       class="rounded-full px-3 py-1.5 text-xs font-semibold <%= query.category === c.id ? 'bg-brand text-white' : 'border border-slate-300 text-slate-600 hover:bg-slate-50' %>">
+      <%= c.name %>
+    </a>
+  <% }); %>
+</div>
+
+<!-- Grid kartu buku -->
+<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <% if (!books.length) { %>
+    <div class="col-span-full rounded-xl border border-slate-200 bg-white px-4 py-12 text-center text-sm text-slate-500">Tidak ada buku yang cocok.</div>
+  <% } %>
+  <% books.forEach(function (b) { %>
+    <div class="flex flex-col overflow-hidden rounded-2xl bg-card text-white shadow-lg">
+      <a href="/katalog/<%= b.id %>" class="block">
+        <div class="relative h-44">
+          <%- include('../partials/book-cover', { book: b, wrapClass: 'h-44' }) %>
+          <span class="absolute left-2 top-2 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-bold text-white">
+            <%= formatLabel(b.format) %>
+          </span>
+          <span class="absolute right-2 top-2 rounded-full bg-black/70 px-2.5 py-0.5 text-[11px] font-bold text-white">
+            <%= stockBadge(b) %>
+          </span>
+        </div>
+      </a>
+      <div class="flex flex-1 flex-col p-4">
+        <a href="/katalog/<%= b.id %>" class="line-clamp-2 text-sm font-bold leading-snug hover:text-emerald-300">
+          <%= b.title %>
+        </a>
+        <p class="mt-1 text-xs text-slate-400"><%= b.author %> · <%= b.year || '-' %></p>
+        <p class="mt-1 text-xs text-slate-500"><%= b.category_name || 'Umum' %></p>
+
+        <div class="mt-4 flex flex-wrap gap-2 pt-2">
+          <% if (!b.borrow.hidden) {
+             if (b.format !== 'e-book') {
+          %>
+            <% if (b.borrow.allowed) { %>
+              <form method="POST" action="/peminjaman" class="flex-1">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="book_id" value="<%= b.id %>" />
+                <button type="submit"
+                  class="w-full rounded-lg bg-brand px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-brand-dark">
+                  Ajukan Pinjam
+                </button>
+              </form>
+            <% } else { %>
+              <button type="button" disabled title="<%= b.borrow.reasons.join(', ') %>"
+                class="flex-1 rounded-lg bg-slate-700 px-3 py-2 text-center text-xs font-semibold text-slate-300 cursor-not-allowed">
+                Tidak Dapat Meminjam
+              </button>
+            <% } %>
+          <% } %>
+          <% } %>
+          <a href="/katalog/<%= b.id %>"
+             class="flex-1 rounded-lg border border-white/15 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-white/10">
+            Detail
+          </a>
+          <% if (b.format === 'e-book' && !b.borrow.hidden) { %>
+            <a href="/ebook/<%= b.id %>"
+               class="flex-1 rounded-lg bg-emerald-600 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-emerald-500">
+              Baca E-Book
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>

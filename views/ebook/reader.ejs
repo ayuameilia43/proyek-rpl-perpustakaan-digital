@@ -1,0 +1,23 @@
+<div class="mx-auto max-w-4xl">
+  <a href="/katalog" class="text-sm font-medium text-brand hover:text-brand-dark">← Kembali ke Katalog</a>
+
+  <div class="mt-4 rounded-2xl bg-white p-4 shadow-sm">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div>
+        <h2 class="text-lg font-bold text-slate-800">Baca E-Book</h2>
+        <p class="text-sm text-slate-500"><%= book.title %> <%= book.year ? '· ' + book.year : '' %></p>
+      </div>
+      <% if (book.pdf_e_book_url) { %>
+        <a href="<%= book.pdf_e_book_url %>" download class="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Download PDF</a>
+      <% } %>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+      <% if (book.pdf_e_book_url) { %>
+        <iframe src="<%= book.pdf_e_book_url %>" class="h-[70vh] w-full" title="E-Book PDF"></iframe>
+      <% } else { %>
+        <div class="flex h-[70vh] items-center justify-center text-sm text-slate-500">PDF belum tersedia.</div>
+      <% } %>
+    </div>
+  </div>
+</div>

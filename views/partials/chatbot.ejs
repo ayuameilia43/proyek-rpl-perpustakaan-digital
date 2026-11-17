@@ -1,0 +1,43 @@
+<!-- Floating Chatbot AI Pustakawan -->
+<div class="fixed bottom-5 right-5 z-50">
+  <!-- Panel chat -->
+  <div id="chatbot-panel" data-csrf="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"
+    class="mb-3 hidden w-80 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+    <div class="flex items-center gap-2 bg-brand px-4 py-3 text-white">
+      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/15">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3.75h7.5a3 3 0 013 3v6a3 3 0 01-3 3H12l-3.75 3v-3H8.25a3 3 0 01-3-3v-6a3 3 0 013-3z"/></svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm font-semibold leading-tight">Pustakawan Virtual</p>
+        <p class="text-[11px] text-emerald-50">Asisten AI · Sekarang Hadir</p>
+      </div>
+      <button id="chatbot-close" class="ml-auto rounded-md p-1 hover:bg-white/15" aria-label="Tutup chat">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div id="chatbot-messages" class="h-64 space-y-3 overflow-y-auto bg-slate-50 p-4 text-sm" aria-live="polite">
+      <div id="chatbot-msg-0" class="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tl-sm bg-white px-3 py-2 text-slate-700 shadow-sm">
+        Halo! Saya Pustakawan Virtual. Saya bisa membantu mencari buku, info jam operasional, aturan denda, serta menjawab pertanyaan tentang akun Anda (buku yang sedang/sudah dipinjam, pengajuan, kuota, dan denda).
+      </div>
+    </div>
+
+    <div class="border-t border-slate-200 p-3">
+      <div class="flex items-center gap-2">
+        <input id="chatbot-input" type="text" placeholder="Tanya buku, pinjaman saya, denda..."
+          class="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm outline-none focus:border-brand" />
+        <button id="chatbot-send" type="button" class="rounded-lg bg-brand px-3 py-2 text-white hover:bg-brand-dark" aria-label="Kirim">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-7.5-7.5m7.5 7.5-7.5 7.5"/></svg>
+        </button>
+      </div>
+      <p id="chatbot-status" class="mt-1 text-[11px] text-slate-400"></p>
+    </div>
+  </div>
+
+  <!-- Tombol melayang -->
+  <button id="chatbot-toggle"
+    class="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-lg transition hover:bg-brand-dark focus:outline-none focus:ring-4 focus:ring-brand/30"
+    aria-label="Buka chatbot">
+    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3.75h7.5a3 3 0 013 3v6a3 3 0 01-3 3H12l-3.75 3v-3H8.25a3 3 0 01-3-3v-6a3 3 0 013-3z"/></svg>
+  </button>
+</div>

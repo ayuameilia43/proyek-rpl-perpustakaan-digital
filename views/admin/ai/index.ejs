@@ -1,0 +1,300 @@
+<div class="mx-auto max-w-3xl">
+  <div class="mb-5">
+    <h2 class="text-xl font-bold text-slate-800">Konfigurasi AI</h2>
+    <p class="text-sm text-slate-500">Koneksi LLM untuk Rekomendasi AI & Chatbot Pustakawan. API Key disimpan di server dan tidak ditampilkan penuh.</p>
+  </div>
+
+  <% if (errors && errors.length) { %>
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <ul class="list-inside list-disc space-y-0.5"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+    </div>
+  <% } %>
+
+  <form method="POST" action="/admin/ai" class="space-y-5">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">Provider & Model</h3>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Provider AI</label>
+          <select name="ai_provider" id="providerSelect"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+            <% providers.forEach(function (p) { %>
+              <option value="<%= p %>" data-model="<%= defaultModels[p] || '' %>" <%= form.ai_provider === p ? 'selected' : '' %>><%= providerLabels[p] || p %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Model</label>
+          <% var suggestions = modelSuggestions[form.ai_provider] || []; %>
+          <select name="ai_model" id="modelSelect" required
+            data-saved-provider="<%= settings.ai_provider || '' %>"
+            data-has-key="<%= maskedKey ? '1' : '0' %>"
+            data-current-model="<%= form.ai_model || '' %>"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+            <% suggestions.forEach(function (m) { %>
+              <option value="<%= m %>" <%= (form.ai_model || defaultModels[form.ai_provider]) === m ? 'selected' : '' %>><%= m %></option>
+            <% }); %>
+            <% if (form.ai_model && suggestions.indexOf(form.ai_model) === -1) { %>
+              <option value="<%= form.ai_model %>" selected><%= form.ai_model %></option>
+            <% } %>
+          </select>
+          <input id="modelInput" type="text" disabled
+            placeholder="<%= defaultModels[form.ai_provider] || '' %>"
+            class="mt-2 hidden w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+          <div class="mt-2 flex flex-wrap items-center gap-2">
+            <button type="button" id="loadModelsBtn"
+              class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+              Muat Ulang Daftar Model
+            </button>
+            <span id="modelStatus" class="text-xs text-slate-400"></span>
+          </div>
+          <label class="mt-2 flex items-center gap-2 text-xs text-slate-600">
+            <input type="checkbox" id="manualModelToggle"
+              class="h-3.5 w-3.5 rounded border-slate-300 text-brand focus:ring-brand" />
+            <span>Isi nama model secara manual</span>
+          </label>
+          <p class="mt-1 text-xs text-slate-400">Daftar model dimuat otomatis sesuai provider & API Key yang diisi. Gunakan opsi manual jika model yang diinginkan tidak ada di daftar.</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Temperature (<span id="tempVal"><%= form.ai_temperature %></span>)</label>
+          <input name="ai_temperature" id="tempInput" type="range" min="0" max="2" step="0.1" value="<%= form.ai_temperature %>"
+            class="w-full accent-brand" oninput="document.getElementById('tempVal').textContent = this.value" />
+          <p class="mt-1 text-xs text-slate-400">0 = jawaban konsisten, 2 = paling kreatif.</p>
+        </div>
+        <div class="flex items-end">
+          <label class="flex items-center gap-2 pb-2">
+            <input type="checkbox" name="is_chatbot_active" value="1" <%= form.is_chatbot_active ? 'checked' : '' %>
+              class="h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand" />
+            <span class="text-sm font-medium text-slate-700">Aktifkan Widget Chatbot</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">API Key</h3>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">API Key Tersimpan</label>
+        <input type="text" disabled value="<%= maskedKey || '(belum diisi)' %>"
+          class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-400" />
+      </div>
+      <div class="mt-3">
+        <label class="mb-1 block text-sm font-medium text-slate-700">API Key Baru (opsional)</label>
+        <input name="ai_api_key" type="password" placeholder="Kosongkan jika tidak ingin mengubah"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 class="mb-4 text-base font-semibold text-slate-800">System Prompt</h3>
+      <textarea name="ai_system_prompt" rows="6"
+        class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"><%= form.ai_system_prompt || '' %></textarea>
+      <p class="mt-1 text-xs text-slate-400">Agar AI fokus pada literasi & perpustakaan sekolah.</p>
+    </section>
+
+    <div class="flex flex-col gap-2 sm:flex-row">
+      <button type="submit" class="w-full rounded-lg bg-brand px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-dark sm:w-auto sm:px-8">
+        Simpan Konfigurasi
+      </button>
+      <button type="submit" formaction="/admin/ai/test"
+        class="w-full rounded-lg border border-brand px-4 py-3 text-sm font-semibold text-brand transition hover:bg-emerald-50 sm:w-auto sm:px-8">
+        Test Koneksi AI
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  (function () {
+    var providerSelect = document.getElementById("providerSelect");
+    var modelSelect = document.getElementById("modelSelect");
+    var modelInput = document.getElementById("modelInput");
+    var manualToggle = document.getElementById("manualModelToggle");
+    var loadBtn = document.getElementById("loadModelsBtn");
+    var statusEl = document.getElementById("modelStatus");
+    var keyInput = document.querySelector('input[name="ai_api_key"]');
+    var csrfInput = document.querySelector('input[name="_csrf"]');
+    if (!providerSelect || !modelSelect) return;
+
+    var PROVIDER_LABELS = <%- JSON.stringify(providerLabels) %>;
+    var DEFAULT_MODELS = <%- JSON.stringify(defaultModels) %>;
+    var FALLBACK_MODELS = <%- JSON.stringify(modelSuggestions) %>;
+
+    var savedProvider = modelSelect.getAttribute("data-saved-provider") || "";
+    var hasSavedKey = modelSelect.getAttribute("data-has-key") === "1";
+    var currentModel = modelSelect.getAttribute("data-current-model") || "";
+    var requestSeq = 0;
+    var keyTimer = null;
+
+    function setStatus(text) {
+      if (statusEl) statusEl.textContent = text || "";
+    }
+
+    function providerLabel(provider) {
+      return PROVIDER_LABELS[provider] || provider;
+    }
+
+    function keyValue() {
+      return keyInput ? keyInput.value.trim() : "";
+    }
+
+    function defaultModel(provider) {
+      return DEFAULT_MODELS[provider] || "";
+    }
+
+    function fallbackModels(provider) {
+      return (FALLBACK_MODELS[provider] || []).map(function (id) {
+        return { id: id, label: id };
+      });
+    }
+
+    function hasKeyFor(provider) {
+      return keyValue() !== "" || (provider === savedProvider && hasSavedKey);
+    }
+
+    function detectProvider(key) {
+      if (key.length < 8) return "";
+      if (/^AIza/.test(key)) return "gemini";
+      if (/^xai-/i.test(key)) return "grok";
+      if (/^nvapi-/i.test(key)) return "nvidia";
+      return "";
+    }
+
+    function fillOptions(models, selected) {
+      var wanted = selected || "";
+      var seen = {};
+      var list = (models || []).slice();
+      var exists = list.some(function (m) { return m && m.id === wanted; });
+      if (wanted && !exists) list.unshift({ id: wanted, label: "nilai tersimpan" });
+
+      modelSelect.innerHTML = "";
+      list.forEach(function (m) {
+        if (!m || !m.id || seen[m.id]) return;
+        seen[m.id] = true;
+        var option = document.createElement("option");
+        option.value = m.id;
+        option.textContent = m.label && m.label !== m.id ? m.id + " \u2014 " + m.label : m.id;
+        modelSelect.appendChild(option);
+      });
+      if (wanted && seen[wanted]) modelSelect.value = wanted;
+      if (!modelSelect.value && modelSelect.options.length) modelSelect.selectedIndex = 0;
+    }
+
+    async function loadModels(selected) {
+      var provider = providerSelect.value;
+      var seq = ++requestSeq;
+      setStatus("Memuat daftar model " + providerLabel(provider) + "...");
+      try {
+        var res = await fetch("/admin/ai/models", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            provider: provider,
+            ai_api_key: keyValue(),
+            _csrf: csrfInput ? csrfInput.value : ""
+          })
+        });
+        var data = await res.json();
+        if (seq !== requestSeq) return;
+        if (data.ok && data.models && data.models.length) {
+          fillOptions(data.models, selected || modelSelect.value || defaultModel(provider));
+          setStatus(data.models.length + " model tersedia untuk " + providerLabel(provider) + ".");
+        } else {
+          fillOptions(fallbackModels(provider), selected || modelSelect.value || defaultModel(provider));
+          setStatus((data.error || "Daftar model tidak tersedia.") + " Menampilkan model default.");
+        }
+      } catch (err) {
+        if (seq !== requestSeq) return;
+        fillOptions(fallbackModels(provider), selected || modelSelect.value || defaultModel(provider));
+        setStatus("Gagal memuat daftar model: " + err.message + ". Menampilkan model default.");
+      }
+    }
+
+    function switchProvider(provider) {
+      var selected = defaultModel(provider);
+      fillOptions(fallbackModels(provider), selected);
+      if (hasKeyFor(provider)) {
+        loadModels(selected);
+      } else {
+        setStatus("Belum ada API Key untuk provider ini. Isi API Key baru untuk memuat daftar model lengkap.");
+      }
+    }
+
+    providerSelect.addEventListener("change", function () {
+      switchProvider(providerSelect.value);
+    });
+
+    if (keyInput) {
+      keyInput.addEventListener("input", function () {
+        if (keyTimer) clearTimeout(keyTimer);
+        keyTimer = setTimeout(function () {
+          var key = keyValue();
+          var detected = detectProvider(key);
+          if (detected && detected !== providerSelect.value) {
+            providerSelect.value = detected;
+            switchProvider(detected);
+            setStatus("Provider terdeteksi dari API Key: " + providerLabel(detected) + ". Memuat daftar model...");
+            return;
+          }
+          if (key.length >= 8) loadModels(modelSelect.value);
+        }, 800);
+      });
+    }
+
+    if (loadBtn) {
+      loadBtn.addEventListener("click", function () {
+        loadModels(modelSelect.value);
+      });
+    }
+
+    if (manualToggle && modelInput) {
+      manualToggle.addEventListener("change", function () {
+        if (manualToggle.checked) {
+          modelInput.value = modelSelect.value || "";
+          modelInput.removeAttribute("disabled");
+          modelInput.setAttribute("name", "ai_model");
+          modelInput.setAttribute("required", "required");
+          modelInput.classList.remove("hidden");
+          modelSelect.setAttribute("disabled", "disabled");
+          modelSelect.removeAttribute("required");
+          modelInput.focus();
+          setStatus("Mode manual aktif. Ketik nama model yang ingin dipakai.");
+        } else {
+          var typed = modelInput.value.trim();
+          modelInput.setAttribute("disabled", "disabled");
+          modelInput.removeAttribute("name");
+          modelInput.removeAttribute("required");
+          modelInput.classList.add("hidden");
+          modelSelect.removeAttribute("disabled");
+          modelSelect.setAttribute("required", "required");
+          if (typed) {
+            var exists = false;
+            Array.prototype.forEach.call(modelSelect.options, function (o) {
+              if (o.value === typed) exists = true;
+            });
+            if (!exists) {
+              var option = document.createElement("option");
+              option.value = typed;
+              option.textContent = typed + " \u2014 nilai manual";
+              modelSelect.appendChild(option);
+            }
+            modelSelect.value = typed;
+          }
+          setStatus("Daftar model otomatis mengikuti provider & API Key.");
+        }
+      });
+    }
+
+    if (hasKeyFor(providerSelect.value)) {
+      loadModels(currentModel || modelSelect.value);
+    } else {
+      setStatus(
+        currentModel
+          ? "Menampilkan model tersimpan. Isi API Key untuk memuat daftar model lengkap."
+          : "Isi API Key untuk memuat daftar model lengkap."
+      );
+    }
+  })();
+</script>

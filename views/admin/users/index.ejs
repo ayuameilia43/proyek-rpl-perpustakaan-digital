@@ -1,0 +1,80 @@
+<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h2 class="text-xl font-bold text-slate-800">Daftar Pengguna</h2>
+    <p class="text-sm text-slate-500">Kelola akun Siswa, Pustakawan, dan Administrator.</p>
+  </div>
+  <a href="/admin/users/create" class="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-dark">
+    + Tambah Pengguna
+  </a>
+</div>
+
+<!-- Pencarian & filter -->
+<form method="GET" action="/admin/users" class="mb-5 flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row">
+  <input name="q" value="<%= query.q || '' %>" placeholder="Cari nama / NISN / email"
+    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 sm:max-w-xs" />
+  <select name="role" class="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand sm:w-40">
+    <option value="">Semua Role</option>
+    <% roles.forEach(function (r) { %>
+      <option value="<%= r %>" <%= query.role === r ? 'selected' : '' %>><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
+    <% }); %>
+  </select>
+  <div class="flex gap-2">
+    <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Cari</button>
+    <a href="/admin/users" class="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Reset</a>
+  </div>
+</form>
+
+<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+  <table class="w-full text-left text-sm">
+    <thead class="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+      <tr>
+        <th class="px-4 py-3">NISN</th>
+        <th class="px-4 py-3">Nama Lengkap</th>
+        <th class="px-4 py-3">Kelas</th>
+        <th class="px-4 py-3">WhatsApp</th>
+        <th class="px-4 py-3">Email</th>
+        <th class="px-4 py-3">Role</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3 text-right">Aksi</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% if (!users.length) { %>
+        <tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Tidak ada pengguna ditemukan.</td></tr>
+      <% } %>
+      <% users.forEach(function (u) { %>
+        <tr class="hover:bg-slate-50/60">
+          <td class="px-4 py-3 font-mono text-xs"><%= u.nisn %></td>
+          <td class="px-4 py-3 font-medium text-slate-700"><%= u.full_name %></td>
+          <td class="px-4 py-3 text-slate-500"><%= u.class || '-' %></td>
+          <td class="px-4 py-3 text-slate-500"><%= u.whatsapp_number || '-' %></td>
+          <td class="px-4 py-3 text-slate-500"><%= u.email %></td>
+          <td class="px-4 py-3">
+            <% const rc = u.role === 'admin' ? 'bg-emerald-100 text-emerald-700' : (u.role === 'pustakawan' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'); %>
+            <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= rc %>"><%= u.role === 'admin' ? 'Administrator' : (u.role === 'pustakawan' ? 'Pustakawan' : 'Siswa') %></span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= u.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>">
+              <%= u.is_active ? 'Aktif' : 'Nonaktif' %>
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center justify-end gap-2">
+              <a href="/admin/users/<%= u.id %>/edit" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50">Edit</a>
+              <% if (u.id !== user.id) { %>
+                <form method="POST" action="/admin/users/<%= u.id %>/toggle" onsubmit="return confirm('Ubah status aktif akun ini?')">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button type="submit" class="rounded-lg border px-2.5 py-1.5 text-xs font-medium <%= u.is_active ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50' %>">
+                    <%= u.is_active ? 'Nonaktifkan' : 'Aktifkan' %>
+                  </button>
+                </form>
+              <% } else { %>
+                <span class="px-2 text-xs text-slate-400">(Anda)</span>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>

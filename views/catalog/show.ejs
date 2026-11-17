@@ -1,0 +1,48 @@
+<div class="mx-auto max-w-5xl">
+  <a href="/katalog" class="text-sm font-medium text-brand hover:text-brand-dark">← Kembali ke Katalog</a>
+
+  <div class="mt-4 grid gap-6 rounded-2xl bg-white p-6 shadow-sm md:grid-cols-3">
+    <div class="md:col-span-1">
+      <div class="h-72 overflow-hidden rounded-xl">
+        <%- include('../partials/book-cover', { book, wrapClass: 'h-72' }) %>
+      </div>
+    </div>
+
+    <div class="md:col-span-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700"><%= book.format === 'e-book' ? 'E-Book' : (book.format === 'keduanya' ? 'Fisik & E-Book' : 'Fisik') %></span>
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">Stok: <%= book.stock_fisic %>/<%= book.total_stock_fisic %></span>
+      </div>
+      <h2 class="mt-3 text-2xl font-bold text-slate-800"><%= book.title %></h2>
+      <p class="mt-1 text-sm text-slate-500"><%= book.author %> <%= book.year ? '· ' + book.year : '' %></p>
+      <p class="mt-1 text-xs text-slate-400">ISBN: <%= book.ISBN %> · Kategori: <%= book.category_name || '-' %></p>
+
+      <div class="mt-4">
+        <h3 class="text-sm font-semibold text-slate-700">Sinopsis</h3>
+        <p class="mt-2 text-sm text-slate-600"><%= book.synopsis || 'Belum ada sinopsis.' %></p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-2">
+        <% if (book.format === 'e-book') { %>
+          <a href="/ebook/<%= book.id %>" class="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500">Baca E-Book</a>
+        <% } %>
+        <% if (isStudent) { %>
+          <% if (!book.borrow.hidden) { %>
+            <% if (book.borrow.allowed) { %>
+              <form method="POST" action="/peminjaman">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="book_id" value="<%= book.id %>" />
+                <button type="submit" class="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">Ajukan Pinjam</button>
+              </form>
+            <% } else { %>
+              <button type="button" disabled title="<%= book.borrow.reasons.join(', ') %>"
+                class="rounded-lg bg-slate-400 px-4 py-2.5 text-sm font-semibold text-white cursor-not-allowed">Tidak Dapat Meminjam</button>
+            <% } %>
+          <% } else { %>
+            <p class="text-sm text-slate-400">Anda tidak dapat meminjam buku ini.</p>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

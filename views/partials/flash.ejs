@@ -1,0 +1,11 @@
+<% if (typeof flash !== 'undefined' && flash) { %>
+  <div class="mb-4 flex items-start gap-2 rounded-lg border px-4 py-3 text-sm
+    <%= flash.type === 'success'
+        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        : flash.type === 'warning'
+          ? 'border-amber-200 bg-amber-50 text-amber-700'
+          : 'border-red-200 bg-red-50 text-red-700' %>">
+    <span class="mt-0.5"><%= flash.type === 'success' ? '✓' : (flash.type === 'warning' ? '!' : '✕') %></span>
+    <span><%= flash.message %></span>
+  </div>
+<% } %>
